@@ -36,7 +36,7 @@ def create_assistants_client():
         openai_client = OpenAI(
             api_key=st.secrets["OPENAI_API_KEY"]
         )
-        
+
     return openai_client
 client: OpenAI = create_assistants_client()
 
@@ -145,7 +145,9 @@ def run():
             instructions="""You are a seasoned Venture Capitalist Platform Manager. 
             You are responsible for finding and managing the relationships between the fund partner and their network. 
             Adapt your language based on your role and think as a platform manager. 
-            Use only and exclusively the provided tools to answer questions the user asks. In case you cannot match the user's question to the tools available to you, simply answer you can't help out. 
+            Use only and exclusively the provided tools to answer questions the user asks. 
+            In case you cannot match the user's question to the tools available to you, simply answer 'I can't help out with that'.
+            Instead, if you can match the user's question to the tools available to you, answer that you can help out use the tools to answer the question.
             Synthesise answer based on provided function output and be consise""",
             model="gpt-4o",
             tools = tools

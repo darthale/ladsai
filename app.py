@@ -28,9 +28,15 @@ logger = init_logging()
 st.cache_resource(show_spinner=False)
 def create_assistants_client():
     logger.info("Creating OpenAI client")
-    openai_client = OpenAI(
-        api_key=os.environ["OPENAI_API_KEY"]
-    )
+    if os.environ.get("LOCAL_RUN"):
+        openai_client = OpenAI(
+            api_key=os.environ["OPENAI_API_KEY"]
+        )
+    else:
+        openai_client = OpenAI(
+            api_key=st.secrets["OPENAI_API_KEY"]
+        )
+        
     return openai_client
 client: OpenAI = create_assistants_client()
 

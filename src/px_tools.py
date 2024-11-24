@@ -24,20 +24,20 @@ def recommend_angels_for_company(company_name: str) -> str:
     logger.info(f"Recommend angels for company: {company_name}")
     facts = pmtx.perform(USE_CASE_1_GET_OUTPUT_VADA, {"startup": company_name, "degree_of_separation":"3"})
 
-    # Convert Facts to strings
-    fact_strings = [str(fact) for fact in facts]
-    selected_facts = fact_strings[:20]
-    
-    # Clear previous suggestions and create new mapping
+    # Convert Facts to strings and format them
+    formatted_facts = []
     current_suggestions.clear()
-    for fact in selected_facts:
-        # Extract angel name using regex (assumes format: startup_angel_suggestion(Company|Angel|type|score))
-        if match := re.search(r'startup_angel_suggestion\([^|]+\|([^|]+)\|', fact):
-            angel_name = match.group(1)
-            current_suggestions[angel_name] = fact
     
-    # Join with newlines
-    return "\n".join(selected_facts)
+    for fact in facts[:20]:
+        fact_str = str(fact)
+        # Updated regex to capture all components
+        if match := re.search(r'startup_angel_suggestion\([^|]+\|([^|]+)\|([^|]+)\|([^|]+)\|([^|]+)\)', fact_str):
+            angel_name, angel_type, score, degree = match.groups()
+            formatted_fact = f"{angel_name} is a {angel_type} angel, with a score of {score} and with a degree of separation of {degree}"
+            formatted_facts.append(formatted_fact)
+            current_suggestions[angel_name] = fact_str
+    
+    return "\n".join(formatted_facts)
     
 def fetch_available_startups() -> str:
     # here we make the call to Prometheux API via the SDKS

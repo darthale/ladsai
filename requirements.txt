@@ -1,3 +1,4 @@
 openai
 streamlit
+git+https://github.com/prometheuxresearch/prometheux_chain.git
 boto3

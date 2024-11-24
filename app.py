@@ -1,44 +1,30 @@
 import os
 import io
-import logging
 import queue
 import json
-import time
 
 import streamlit as st
 from openai import OpenAI
 from streamlit import session_state as ss
 from PIL import Image
 
-from src.px_tools import recommend_angels_for_company, connection_with_person_x, tools
+from src.px_tools import recommend_angels_for_company, connection_with_person_x, explain_recommend_angel, fetch_available_startups, tools
+from src.utils import get_logger
+from src.openai_api import get_client
+logger = get_logger()
 
 available_functions = {
     "recommend_angels_for_company": recommend_angels_for_company,
     "connection_with_person_x": connection_with_person_x,
+    "fetch_available_startups": fetch_available_startups,
+    "explain_recommend_angel": explain_recommend_angel
 }
+client = get_client()
+ASSISTANT_PROMPT = open("src/prompts/assistant.txt", "r").read()
 
 st.cache_resource(show_spinner=False)
-def init_logging():
-    logging.basicConfig(format="[%(asctime)s] %(levelname)+8s: %(message)s")
-    local_logger = logging.getLogger()
-    local_logger.setLevel(logging.INFO)
-    return local_logger
-logger = init_logging()
 
 st.cache_resource(show_spinner=False)
-def create_assistants_client():
-    logger.info("Creating OpenAI client")
-    if os.environ.get("LOCAL_RUN"):
-        openai_client = OpenAI(
-            api_key=os.environ["OPENAI_API_KEY"]
-        )
-    else:
-        openai_client = OpenAI(
-            api_key=st.secrets["OPENAI_API_KEY"]
-        )
-
-    return openai_client
-client: OpenAI = create_assistants_client()
 
 if 'tool_requests' not in ss:
     ss['tool_requests'] = queue.Queue()
@@ -139,19 +125,12 @@ def display_stream(content_stream, create_context=True):
 
 def run():
     if "assistant" not in ss:
-        # assistant = client.beta.assistants.retrieve(assistant_id=os.environ["ASSISTANT_ID"])
         assistant = client.beta.assistants.create(
             name="Venture Capitalist Platform Manager Assistant",
-            instructions="""You are a seasoned Venture Capitalist Platform Manager. 
-            You are responsible for finding and managing the relationships between the fund partner and their network. 
-            Adapt your language based on your role and think as a platform manager. 
-            Use only and exclusively the provided tools to answer questions the user asks. 
-            In case you cannot match the user's question to the tools available to you, simply answer 'I can't help out with that'.
-            Instead, if you can match the user's question to the tools available to you, answer that you can help out use the tools to answer the question.
-            Synthesise answer based on provided function output and be consise""",
+            instructions=ASSISTANT_PROMPT,
             model="gpt-4o",
             tools = tools
-            )
+        )
 
         if assistant is None:
             raise RuntimeError(f"Assistant not found.")
@@ -200,6 +179,7 @@ def run():
                 logger.info("Handling tool requests")
                 with st.chat_message("assistant"):
                     tool_outputs, thread_id, run_id = handle_requires_action(tool_requests.get())
+                    logger.info(f"Tool outputs: {tool_outputs}")
                     with client.beta.threads.runs.submit_tool_outputs_stream(
                             thread_id=thread_id,
                             run_id=run_id,

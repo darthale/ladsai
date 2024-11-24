@@ -4,17 +4,15 @@ import re
 import random
 
 from src.openai_api import get_client
-from src.utils import get_logger, build_vada, fetch_prompt_config
+from src.utils import get_logger, fetch_prompt_config
 
+USE_CASE_1_GET_STARTUPS_VADA = "data/vadalog/use_case_1/get_startups.vada"
 USE_CASE_1_GET_OUTPUT_VADA = "data/vadalog/use_case_1/get_output_use_case_1.vada"
 USE_CASE_1_GET_EXPLANATION_VADA = "data/vadalog/use_case_1/get_explanation_use_case_1.vada"
-USE_CASE_1_GET_STARTUPS_VADA = "data/vadalog/use_case_1/get_startups.vada"
 PROMPT_CONFIG_PATH = ["src/prompts/angel_summary_01.txt", "integration_tests/use_case_1/angel_summary_01.txt"]
 
 client = get_client()
 logger = get_logger()
-TMP_USE_CASE_1_GET_STARTUPS_VADA = build_vada(USE_CASE_1_GET_STARTUPS_VADA)
-TMP_USE_CASE_1_GET_OUTPUT_VADA = build_vada(USE_CASE_1_GET_OUTPUT_VADA)
 EXPLAIN_ANGEL_RECOMMENDATION_PROMPT = fetch_prompt_config(PROMPT_CONFIG_PATH)
 
 # Add at the top of the file with other global variables
@@ -24,7 +22,7 @@ def recommend_angels_for_company(company_name: str) -> str:
     global current_suggestions
     # here we make the call to Prometheux API via the SDKS
     logger.info(f"Recommend angels for company: {company_name}")
-    facts = pmtx.perform(TMP_USE_CASE_1_GET_OUTPUT_VADA, {"startup": company_name, "degree_of_separation":"3"})
+    facts = pmtx.perform(USE_CASE_1_GET_OUTPUT_VADA, {"startup": company_name, "degree_of_separation":"3"})
 
     # Convert Facts to strings
     fact_strings = [str(fact) for fact in facts]
@@ -44,7 +42,7 @@ def recommend_angels_for_company(company_name: str) -> str:
 def fetch_available_startups() -> str:
     # here we make the call to Prometheux API via the SDKS
     logger.info(f"Fetching available startups..")
-    startups = pmtx.perform(TMP_USE_CASE_1_GET_STARTUPS_VADA)
+    startups = pmtx.perform(USE_CASE_1_GET_STARTUPS_VADA)
 
     # Extract startup names using regex
     startup_names = [re.search(r'startup_name\((.*?)\)', str(s)).group(1) for s in startups]

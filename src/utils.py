@@ -21,27 +21,6 @@ else:
 def get_logger():
     return logger
 
-def build_vada(vada_file_path: str):
-
-    # Ensure the environment variables are set
-    if not s3a_access_key or not s3a_secret_key:
-        raise ValueError("Environment variables 's3aAccessKey' and 's3aSecretKey' must be set.")
-
-    # Read the text file content
-    with open(vada_file_path, "r") as file:
-        content = file.read()
-
-    # Replace placeholders with environment variable values
-    content = content.replace("{s3aAccessKey}", s3a_access_key)
-    content = content.replace("{s3aSecretKey}", s3a_secret_key)
-
-    # Save the updated content to a new file or overwrite the existing file
-    tmp_file_path = vada_file_path + ".tmp"
-    with open(tmp_file_path, "w") as file:
-        file.write(content)
-    
-    return tmp_file_path
-
 
 def fetch_prompt_config(prompt_config_path: str, bucket_name: str = "px-ladsai-poc"):
     angel_recommendation_prompt = ""

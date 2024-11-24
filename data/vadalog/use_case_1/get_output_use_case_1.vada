@@ -1,5 +1,5 @@
 @input("input_use_case_1").
-@bind("input_use_case_1","csv useHeaders=true,multiline=true,s3aAccessKey='{s3aAccessKey}',s3aSecretKey='{s3aSecretKey}',multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_1/outputs","part-00000-20700f0d-2a0c-48dd-88ac-ba4cff8bdd9c-c000.csv").
+@bind("input_use_case_1","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_1/outputs","part-00000-20700f0d-2a0c-48dd-88ac-ba4cff8bdd9c-c000.csv").
 
 
 startup_angel_suggestion(Startup,Angel,Type,TotalWeight,DistanceFromAndreaGurnari) :-

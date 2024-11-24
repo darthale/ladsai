@@ -1,5 +1,5 @@
 @input("startup").
-@bind("startup","csv useHeaders=true,multiline=true,s3aAccessKey='{s3aAccessKey}',s3aSecretKey='{s3aSecretKey}',multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_1","startups.csv").
+@bind("startup","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_1","startups.csv").
 
 
 startup_name(Name) :-

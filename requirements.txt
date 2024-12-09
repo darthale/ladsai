@@ -1,6 +1,6 @@
 openai
 streamlit
-git+https://github.com/prometheuxresearch/prometheux_chain.git
+git+https://github.com/prometheuxresearch/prometheux_chain.git@c395387f744a67b12f1e1ba82876356124afa111
 boto3
 streamlit-agraph
 python-dotenv

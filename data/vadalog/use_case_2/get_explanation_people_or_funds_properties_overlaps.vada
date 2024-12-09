@@ -1,0 +1,10 @@
+@input("person_or_fund_properties_overlap_explain").
+@qbind("person_or_fund_properties_overlap_explain","postgresql","prometheux","select fact, json_explanation, textual_explanation from people_or_funds_properties_overlaps_explain").
+
+
+explanation(Fact,JSONExplanation,TextualExplanation) :-
+    person_or_fund_properties_overlap_explain(Fact,JSONExplanation,TextualExplanation),
+    Fact == ${fact_to_explain}.
+
+
+@output("explanation").

@@ -1,0 +1,48 @@
+@input("person_or_fund_properties_overlap").
+@bind("person_or_fund_properties_overlap","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/output","people_or_funds_properties_overlaps").
+
+@input("property_related_to_person_or_fund").
+@bind("property_related_to_person_or_fund","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts/w","properties_related_to_people_or_funds").
+
+
+% Count people overlap to all properties
+person_properties_overlap_count(NumPeople) :-
+    person_or_fund_properties_overlap(Entity,Type,OverlapTotal),
+    Type == "Person",
+    NumPeople = mcount(Entity).
+
+
+% Count founders, angels, and VCs overlap to all properties
+
+person_type_properties_overlap_count(TypeOfPerson,NumPeopleOfType) :-
+    person_or_fund_properties_overlap(Entity,Type,OverlapTotal),
+    property_related_to_person_or_fund(TypeOfPerson,Entity,_,_),
+    TypeOfPerson == "Founder",
+    Type == "Person",
+    NumPeopleOfType = mcount(Entity).
+
+person_type_properties_overlap_count(TypeOfPerson,NumPeopleOfType) :-
+    person_or_fund_properties_overlap(Entity,Type,OverlapTotal),
+    property_related_to_person_or_fund(TypeOfPerson,Entity,_,_),
+    TypeOfPerson == "VC",
+    Type == "Person",
+    NumPeopleOfType = mcount(Entity).
+
+person_type_properties_overlap_count(TypeOfPerson,NumPeopleOfType) :-
+    person_or_fund_properties_overlap(Entity,Type,OverlapTotal),
+    property_related_to_person_or_fund(TypeOfPerson,Entity,_,_),
+    TypeOfPerson == "Angel",
+    Type == "Person",
+    NumPeopleOfType = mcount(Entity).
+    
+
+% Get percentage of each type of person (remember, the total is not 100% as a person can be both angel and founder etc.)
+person_type_properties_overlap_percentage(TypeOfPerson,PercentPeopleOfType) :-
+    person_type_properties_overlap_count(TypeOfPerson,NumPeopleOfType),
+    person_properties_overlap_count(NumPeople),
+    PercentPeopleOfTypeTmp = NumPeopleOfType * 100,
+    PercentPeopleOfType = PercentPeopleOfTypeTmp / NumPeople.
+
+
+@output("person_type_properties_overlap_percentage").
+@post("person_type_properties_overlap_percentage","orderBy(-2,1)").

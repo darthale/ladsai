@@ -1,0 +1,11 @@
+@input("person_or_fund_properties_overlap_input").
+@bind("person_or_fund_properties_overlap_input","csv useHeaders=true, multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/output","people_or_funds_properties_overlaps").
+
+
+person_or_fund_properties_overlap(Entity,Type,OverlapTotal) :-
+    person_or_fund_properties_overlap_input(Entity,Type,OverlapTotal).
+
+
+@output("person_or_fund_properties_overlap").
+@post("person_or_fund_properties_overlap","orderBy(-3)").
+%@post("person_or_fund_properties_overlap","limit(10)").

@@ -1,0 +1,10 @@
+@input("shortest_path_source_target_explain").
+@qbind("shortest_path_source_target_explain","postgresql","prometheux","select fact, json_explanation, textual_explanation from shortest_path_source_target_explain").
+
+
+explanation(Fact,JSONExplanation,TextualExplanation) :-
+    shortest_path_source_target_explain(Fact,JSONExplanation,TextualExplanation),
+    Fact == ${fact_to_explain}.
+
+
+@output("explanation").

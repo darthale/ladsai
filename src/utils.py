@@ -23,17 +23,17 @@ def get_logger():
 
 
 def fetch_prompt_config(prompt_config_path: str, bucket_name: str = "px-ladsai-poc"):
-    angel_recommendation_prompt = ""
+    recommendation_prompt = ""
 
     if os.environ.get("LOCAL_RUN"):
-        angel_recommendation_prompt = open(prompt_config_path[0], "r").read()
+        recommendation_prompt = open(prompt_config_path[0], "r").read()
     else:
         # Initialize the S3 client
         s3_client = boto3.client('s3', aws_access_key_id=s3a_access_key, aws_secret_access_key=s3a_secret_key)
         try:
             response = s3_client.get_object(Bucket=bucket_name, Key=prompt_config_path[1])
-            angel_recommendation_prompt = response['Body'].read().decode('utf-8')  # Decode the file content as a string
+            recommendation_prompt = response['Body'].read().decode('utf-8')  # Decode the file content as a string
         except Exception as e:
             logger.exception(f"Error fetching the file from S3")
 
-    return angel_recommendation_prompt
+    return recommendation_prompt

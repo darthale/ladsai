@@ -1,0 +1,13 @@
+@input("input_startup_expert_suggestion").
+@bind("input_startup_expert_suggestion","csv useHeaders=true, multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_1/outputs","startups_experts_suggestions").
+
+
+startup_expert_suggestion(Startup,Expert,TotalWeight,DistanceFromAndreaGurnari) :-
+    input_startup_expert_suggestion(Startup,Expert,TotalWeight,DistanceFromAndreaGurnari),
+    Startup == ${startup},
+    DistanceFromAndreaGurnari <= ${degree_of_separation}.
+    
+
+@output("startup_expert_suggestion").
+@post("startup_expert_suggestion","orderBy(-3,1,2)").
+%@post("startup_expert_suggestion","limit(10)").

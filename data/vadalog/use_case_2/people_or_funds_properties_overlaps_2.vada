@@ -1,0 +1,65 @@
+@input("property_related_to_person_or_fund").
+@bind("property_related_to_person_or_fund","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts/w","properties_related_to_people_or_funds").
+
+
+% Get single requested properties from input param
+
+property_atom(1).
+
+requested_property_single_iterate(X,PropertiesList,PropertiesListLength,Iterator) :-
+    property_atom(X),
+    Properties = ${requested_properties},
+    PropertiesLower = to_lower(Properties),
+    PropertiesList = split(PropertiesLower,","),
+    PropertiesListLength = collections:size(PropertiesList),
+    Iterator = 1,
+    PropertiesListLength > 0.
+
+requested_property_single_iterate(X,PropertiesList,PropertiesListLength,Iterator) :-
+    requested_property_single_iterate(X,PropertiesList,PropertiesListLength,IteratorOld),
+    Iterator = IteratorOld + 1,
+    PropertiesListLength >= Iterator.
+
+requested_property_single(Property) :-
+    requested_property_single_iterate(X,PropertiesList,PropertiesListLength,Iterator),
+    Property = collections:get(PropertiesList,Iterator),
+    IsPropertyNull = nullManagement:isnull(Property),
+    IsPropertyNull == #F.
+
+    
+% Get person or fund overlap to single property
+person_or_fund_property_overlap_single(Entity,Type,PropertyInput) :-
+    property_related_to_person_or_fund(Property,Entity,Length,Type),
+    requested_property_single(PropertyInput),
+    PropertyLower = to_lower(Property),
+    IsOverlap = contains(PropertyLower,PropertyInput),
+    IsOverlap == #T.
+    
+    
+% Collect person or fund overlap to all properties
+
+person_or_fund_properties_overlap_list(Entity,Type,OverlapTotal,OverlappedProperties) :-
+    person_or_fund_property_overlap_single(Entity,Type,Property),
+    PropertyList = [Property],
+    OverlapTotal = mcount(PropertyList),
+    OverlappedProperties = munion(PropertyList).
+
+person_or_fund_properties_overlap(Entity,Type,OverlapTotal) :-
+    person_or_fund_properties_overlap_list(Entity,Type,OverlapTotal,OverlappedProperties).
+
+
+
+
+
+@output("person_or_fund_properties_overlap_list").
+@bind("person_or_fund_properties_overlap_list","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/output","people_or_funds_properties_overlaps_lists").
+
+@output("person_or_fund_properties_overlap").
+@bind("person_or_fund_properties_overlap","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/output","people_or_funds_properties_overlaps").
+
+
+@chase("csv","disk/data/chase/use_case_2","people_or_funds_properties_overlaps_chase").
+
+
+%@model("person_or_fund_properties_overlap_explain","['fact:string','json_explanation:string','textual_explanation:string']").
+%@explain("postgresql predicates='person_or_fund_properties_overlap', chase=true, indexColumnPosition=0","prometheux","person_or_fund_properties_overlap_explain").

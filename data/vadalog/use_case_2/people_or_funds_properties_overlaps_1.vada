@@ -1,0 +1,101 @@
+@input("edge").
+@bind("edge","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts","edges.csv").
+
+@input("angel").
+@bind("angel","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts","angels.csv").
+
+@input("venture_capitalist").
+@bind("venture_capitalist","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/preprocessing","venture_capitalists.csv").
+
+@input("person").
+@bind("person","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/preprocessing","people.csv").
+
+@input("fund").
+@bind("fund","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/preprocessing","funds.csv").
+
+
+% add direct edges property-to-entity from edges vertical_is_linked_to
+property_related_to_entity_tmp(Source,Target,1) :-
+    edge(Source,Target,Type),
+    Type == "vertical_is_linked_to".
+
+
+% add direct edges property-to-entity from edges location_has_person and location_has_organization
+
+property_related_to_entity_tmp(Source,Target,1) :-
+    edge(Source,Target,Type),
+    Type == "location_has_person".
+
+property_related_to_entity_tmp(Source,Target,1) :-
+    edge(Source,Target,Type),
+    Type == "location_has_organization".
+
+
+% add direct edges property-to-entity from edge stage_was_invested_by_fund
+property_related_to_entity_tmp(Source,Target,1) :-
+    edge(Source,Target,Type),
+    Type == "stage_was_invested_by_fund".
+
+
+% add direct edges property-to-entity from people who are angels, founders, shareholders, vcs
+
+property_related_to_entity_tmp(Target,Source,1) :-
+    angel(Source,Type),
+    Target = "Angel".
+
+property_related_to_entity_tmp(Target,Source,1) :-
+    edge(Source,_,Type),
+    Type == "person_is_founder_of_organization",
+    Target = "Founder".
+
+property_related_to_entity_tmp(Target,Source,1) :-
+    edge(Source,_,Type),
+    Type == "person_is_shareholder_of_organization",
+    Target = "Shareholder".
+
+property_related_to_entity_tmp(Target,Source,1) :-
+    venture_capitalist(Source),
+    Target = "VC".
+
+
+% add indirect edges from property to entity (up to max hops)
+
+@param("max_hops",1). % change with desired number of hops for this
+
+property_related_to_entity_tmp(Source,Target,Length) :-
+    property_related_to_entity_tmp(Source,Middle,LengthOld),
+    edge(Middle,Target,Type),
+    Length = LengthOld + 1,
+    Length <= ${max_hops}.
+
+property_related_to_entity(Source,Target,Length) :-
+    property_related_to_entity_tmp(Source,Target,Length).
+
+
+
+% filter in only cases in which the target is a person or an organization
+
+property_related_to_person_or_fund(Source,Target,Length,Type) :-
+    property_related_to_entity(Source,Target,Length),
+    person(
+        Target,_,
+        _,_,_,_,
+        _,_,_,
+        _,_,_,
+        _,_,_
+    ),
+    Type = "Person".
+
+property_related_to_person_or_fund(Source,Target,Length,Type) :-
+    property_related_to_entity(Source,Target,Length),
+    fund(Target,_,_,_,_,_,_,_,_),
+    Type = "Fund".
+
+
+
+
+@output("property_related_to_person_or_fund").
+@bind("property_related_to_person_or_fund","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts/w","properties_related_to_people_or_funds").
+
+
+@chase("csv","s3a://px-ladsai-poc/integration_tests/use_case_2/chase","properties_related_to_people_or_funds_chase").

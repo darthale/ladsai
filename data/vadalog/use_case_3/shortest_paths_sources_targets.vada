@@ -1,0 +1,32 @@
+@input("edge").
+@bind("edge","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_3/concepts","edges.csv").
+
+
+% get all paths from the node source to the node target
+shortest_path(X,Y,MinLength) :- 
+    edge(X,Y,Type),
+    Length = 1,
+    X == ${source},
+    X != Y,
+    Type != "person_knows_organization",
+    MinLength = mmin(Length).
+
+shortest_path(X,Z,MinLength) :- 
+    shortest_path(X,Y,LengthOld),
+    edge(Y,Z,Type),
+    Y != Z,
+    X != Z,
+    Length = LengthOld + 1,
+    MinLength = mmin(Length).
+
+
+% get path for target
+shortest_path_source_target(Source,Target,MinLength) :-
+    shortest_path(Source,Target,MinLength),
+    Target == ${target}.
+
+
+@output("shortest_path_source_target").
+@bind("shortest_path_source_target","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_3/output","shortest_path_source_target").
+
+@chase("csv","s3a://px-ladsai-poc/integration_tests/use_case_3/chase","shortest_path_source_target_chase").

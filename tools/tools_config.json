@@ -1,0 +1,122 @@
+[
+    {
+       "type":"function",
+       "function":{
+          "name":"recommend_angels_for_company",
+          "description":"Recommend angels for a company. Call this whenever you need to recommend angels for a company. For example, when a user asks 'Which angels could be a good fit for this company?'",
+          "parameters":{
+             "type":"object",
+             "properties":{
+                "company_name":{
+                   "type":"string",
+                   "description":"The company name to recommend angels for."
+                }
+             },
+             "required":[
+                "company_name"
+             ],
+             "additionalProperties":false
+          }
+       }
+    },
+    {
+       "type":"function",
+       "function":{
+          "name":"explain_recommend_angel",
+          "description":"Given a recommended angel, explain in lay-terms why this angel was recommended. Call this whenever you need to get a human explanation. For example, when a user asks 'Tell me why this angel was recommended?'",
+          "parameters":{
+             "type":"object",
+             "properties":{
+                "user_explanation_choice":{
+                   "type":"string",
+                   "description":"The explanation choice made by the user."
+                }
+             },
+             "required":[
+                "user_explanation_choice"
+             ],
+             "additionalProperties":false
+          }
+       }
+    },
+    {
+       "type":"function",
+       "function":{
+          "name":"recommend_experts_for_company",
+          "description":"Recommend experts for a company. Call this whenever you need to recommend experts for a company. For example, when a user asks 'Which experts could be a good fit for this company?'",
+          "parameters":{
+             "type":"object",
+             "properties":{
+                "company_name":{
+                   "type":"string",
+                   "description":"The company name to recommend experts for."
+                }
+             },
+             "required":[
+                "company_name"
+             ],
+             "additionalProperties":false
+          }
+       }
+    },
+    {
+       "type":"function",
+       "function":{
+          "name":"explain_recommend_expert",
+          "description":"Given a recommended expert, explain in lay-terms why this expert was recommended. Call this whenever you need to get a human explanation. For example, when a user asks 'Tell me why this expert was recommended?'",
+          "parameters":{
+             "type":"object",
+             "properties":{
+                "expert_explanation_choice":{
+                   "type":"string",
+                   "description":"The explanation choice made by the user."
+                }
+             },
+             "required":[
+                "expert_explanation_choice"
+             ],
+             "additionalProperties":false
+          }
+       }
+    },
+    {
+       "type":"function",
+       "function":{
+          "name":"display_network_graph",
+          "description":"Display the network graph associated witha a previous tool response. Call this whenever you need to display a network graph containing nodes and relationships. For example, when a user asks 'Show me the network graph?'"
+       }
+    },
+    {
+       "type":"function",
+       "function":{
+          "name":"fetch_available_startups",
+          "description":"Fetch the list of the available startups in the system. Call this whenever you need to get a list of startups the user can interact with. For example, when a user asks 'What startups are available to me today for analysis?'"
+       }
+    },
+    {
+       "type":"function",
+       "function":{
+          "name":"get_shortest_path_sources_targets",
+          "description":"Get the shortest path connecting two people; a source person and a target person. Call this whenever you need to compute the connecting path between two people. For example, when a user asks 'What is the shortest path between person X and person Y?' Or: 'How can I connect to person Y?'",
+          "parameters":{
+             "type":"object",
+             "properties":{
+                "source":{
+                   "type":"string",
+                   "description":"The name of the source person."
+                },
+                "target":{
+                   "type":"string",
+                   "description":"The name of the target person."
+                }
+             },
+             "required":[
+                "source",
+                "target"
+             ],
+             "additionalProperties":false
+          }
+       }
+    }
+ ]
+ 

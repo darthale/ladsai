@@ -1,0 +1,18 @@
+@input("person_or_fund_properties_overlap_list").
+@bind("person_or_fund_properties_overlap_list","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/output","people_or_funds_properties_overlaps_lists").
+
+@param("top_tier_property","London").
+
+
+% Count num overlaps of funds to each property
+fund_top_tier_property_overlap_list(Entity,OverlapTotal,OverlappedProperties) :-
+    person_or_fund_properties_overlap_list(Entity,Type,OverlapTotal,OverlappedProperties),
+    Type == "Fund",
+    TopTierProperty = ${top_tier_property},
+    TopTierPropertyLower = to_lower(TopTierProperty),
+    TopTierPropertyInOverlappedProperties = contains(OverlappedProperties,TopTierPropertyLower),
+    TopTierPropertyInOverlappedProperties == #T.
+
+
+@output("fund_top_tier_property_overlap_list").
+@post("fund_top_tier_property_overlap_list","orderBy(-2,1)").

@@ -1,0 +1,54 @@
+@input("people_or_funds_properties_overlaps_chase").
+
+@bind("people_or_funds_properties_overlaps_chase","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/chase","people_or_funds_properties_overlaps_chase").
+@bind("people_or_funds_properties_overlaps_chase","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/chase","properties_related_to_people_or_funds_chase").
+
+
+
+
+@model("edge","['Source:string','Target:string','Type:string']",
+               "there is an edge from [Source] to [Target] of type [Type]").
+
+@model("angel","['FullName:string','Type:string']",
+               "[FullName] is identified as an angel investor").
+
+@model("venture_capitalist","['FullName:string']",
+       "[FullName] is a venture capitalist").
+
+@model("person","['FullName:string','Location:string',
+                  'CurrentJobTitle:string','CurrentOrganizationName:string','Industry:string','Organizations:string', 
+                  'Category:string','FundInfo:string','Experience:string',
+                  'FormerRole:string','Expertise:string','FormerCompanies:string',
+                  'Interests:string','Angel:string','Community:string']", 
+        "[FullName] is a person residing in [Location]; currently works as [CurrentJobTitle] at [CurrentOrganizationName], operating in the [Industry] sector, is affiliated with organizations [Organizations], categorized under [Category], and associated with fund information [FundInfo]; has work experience at [Experience], has previously held the role of [FormerRole] at [FormerCompanies]; has expertise in [Expertise], has interests in [Interests]; is registered as an angel investor?: [Angel]; is involved in the communities [Community]").
+
+@model("fund", 
+       "['Name:string','InvestorType:string','NumInvestments:int',
+         'NumExits:int','Location:string','NumPartnerInvestments:int',
+         'NumLeadInvestments:int','NumPortfolioOrganizations:int',
+         'FoundedDatePrecise:string']", 
+       "[Name] is a fund, categorized as an [InvestorType], located in [Location], having made [NumInvestments] investments, having achieved [NumExits] exits, having participated in [NumPartnerInvestments] partner investments, having led [NumLeadInvestments] investments, managing [NumPortfolioOrganizations] portfolio organizations and founded in [FoundedDatePrecise].").
+
+
+@model("person_or_fund_properties_overlap","['Entity:string','Type:string','OverlapTotal:int']", 
+       "The entity [Entity] of type [Type] is suggested, featuring an overlap score of [OverlapTotal].").
+
+@model("person_or_fund_properties_overlap_list","['Entity:string','Type:string','OverlapTotal:int','OverlappedProperties:string']", 
+       "The entity [Entity] of type [Type] overlaps on properties [OverlappedProperties].").
+
+
+
+
+
+
+people_or_funds_properties_overlaps_explain(Fact,JSONExplanation,TextualExplanation) :-
+    people_or_funds_properties_overlaps_chase(Fact,JSONExplanation,TextualExplanation).
+
+
+
+
+
+
+@output("people_or_funds_properties_overlaps_explain").
+@model("people_or_funds_properties_overlaps_explain","['fact:string','json_explanation:string','textual_explanation:string']").
+@explain("csv predicates='person_or_fund_properties_overlap', chase=false, useHeaders=true","s3a://px-ladsai-poc/integration_tests/use_case_2/explanation","people_or_funds_properties_overlaps_explain").

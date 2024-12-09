@@ -1,0 +1,10 @@
+@input("startup_expert_suggestion_explain").
+@qbind("startup_expert_suggestion_explain","postgresql","prometheux","select fact, json_explanation, textual_explanation from startups_experts_suggestions_explain").
+
+
+explanation(Fact,JSONExplanation,TextualExplanation) :-
+    startup_expert_suggestion_explain(Fact,JSONExplanation,TextualExplanation),
+    Fact == ${fact_to_explain}.
+
+
+@output("explanation").

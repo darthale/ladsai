@@ -1,0 +1,11 @@
+@input("person_or_fund_properties_overlap_explain_csv").
+@bind("person_or_fund_properties_overlap_explain_csv","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/explanation","people_or_funds_properties_overlaps_explain").
+
+
+person_or_fund_properties_overlap_explain(Fact,JSONExplanation,TextualExplanation) :-
+    person_or_fund_properties_overlap_explain_csv(Fact,JSONExplanation,TextualExplanation).
+
+
+@output("person_or_fund_properties_overlap_explain").
+@model("person_or_fund_properties_overlap_explain","['fact:string','json_explanation:string','textual_explanation:string']").
+@bind("person_or_fund_properties_overlap_explain","postgresql indexColumnPosition=0","prometheux","people_or_funds_properties_overlaps_explain").

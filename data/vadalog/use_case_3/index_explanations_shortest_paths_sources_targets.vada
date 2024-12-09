@@ -1,0 +1,11 @@
+@input("shortest_path_source_target_explain_csv").
+@bind("shortest_path_source_target_explain_csv","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_3/explanations","shortest_path_source_target_explain").
+
+
+shortest_path_source_target_explain(Fact,JSONExplanation,TextualExplanation) :-
+    shortest_path_source_target_explain_csv(Fact,JSONExplanation,TextualExplanation).
+
+
+@output("shortest_path_source_target_explain").
+@model("shortest_path_source_target_explain","['fact:string','json_explanation:string','textual_explanation:string']").
+@bind("shortest_path_source_target_explain","postgresql indexColumnPosition=0","prometheux","shortest_path_source_target_explain").

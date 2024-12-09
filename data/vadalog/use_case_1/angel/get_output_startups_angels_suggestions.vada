@@ -1,0 +1,13 @@
+@input("input_startup_angel_suggestion").
+@bind("input_startup_angel_suggestion","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_1/outputs","startups_angels_suggestions").
+
+startup_angel_suggestion(Startup,Angel,Type,TotalWeight,DistanceFromAndreaGurnari) :-
+    input_startup_angel_suggestion(Startup,Angel,Type,TotalWeight,DistanceFromAndreaGurnari),
+    Startup == ${startup},
+    DistanceFromAndreaGurnari <= ${degree_of_separation}.
+    
+
+@output("startup_angel_suggestion").
+@post("startup_angel_suggestion","orderBy(-4,-5)").
+%@post("startup_angel_suggestion","limit(10)").
+

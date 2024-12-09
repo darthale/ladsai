@@ -1,0 +1,10 @@
+@input("shortest_path_source_target_input").
+@bind("shortest_path_source_target_input","csv useHeaders=true, multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_3/output","shortest_path_source_target").
+
+
+shortest_path_source_target(Source,Target,MinLength) :-
+    shortest_path_source_target_input(Source,Target,MinLength).
+
+
+@output("shortest_path_source_target").
+@post("shortest_path_source_target","orderBy(-3)").

@@ -1,0 +1,26 @@
+@input("shortest_path_source_target_chase").
+@bind("shortest_path_source_target_chase","csv useHeaders=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_3/chase","shortest_path_source_target_chase").
+
+
+@model("edge","['Source:string','Target:string','Type:string']",
+               "there is an edge from [Source] to [Target] of type [Type]").
+
+
+@model("shortest_path","['Source:string','Target:string','MinLength:int']", 
+       "there is a path from [Source] to [Target] of length [MinLength].").
+
+
+@model("shortest_path_source_target", "['Source:string','Target:string','MinLength:int']", 
+       "The shortest path from source [Source] to target [Target] is of length [MinLength].").
+
+
+
+
+shortest_path_source_target_explain(Fact,JSONExplanation,TextualExplanation) :-
+    shortest_path_source_target_chase(Fact,JSONExplanation,TextualExplanation).
+
+
+
+@output("shortest_path_source_target_explain").
+@model("shortest_path_source_target_explain","['fact:string','json_explanation:string','textual_explanation:string']").
+@explain("csv predicates='shortest_path_source_target', chase=false, useHeaders=true","s3a://px-ladsai-poc/integration_tests/use_case_3/explanations","shortest_path_source_target_explain").

@@ -3,6 +3,8 @@
 .venv/
 graph.py
 angel_summary_01.txt
+expert_summary_01.txt
+shortest_path_01.txt
 .DS_Store
 .vscode/*
 *.pyc

@@ -95,7 +95,7 @@ property_related_to_person_or_fund(Source,Target,Length,Type) :-
 
 
 @output("property_related_to_person_or_fund").
-@bind("property_related_to_person_or_fund","csv useHeaders=true,coalesce=true,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts/w","properties_related_to_people_or_funds").
+@bind("property_related_to_person_or_fund","csv useHeaders=true,coalesce=false,multiline=true","s3a://px-ladsai-poc/integration_tests/use_case_2/concepts/w","properties_related_to_people_or_funds").
 
 
 @chase("csv","s3a://px-ladsai-poc/integration_tests/use_case_2/chase","properties_related_to_people_or_funds_chase").

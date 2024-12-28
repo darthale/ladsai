@@ -30,10 +30,15 @@
                 "user_explanation_choice":{
                    "type":"string",
                    "description":"The explanation choice made by the user."
+                },
+                "startup_name":{
+                   "type":"string",
+                   "description":"The startup name the person was recommended for as an angel."
                 }
              },
              "required":[
-                "user_explanation_choice"
+                "user_explanation_choice",
+                "startup_name"
              ],
              "additionalProperties":false
           }

@@ -5,9 +5,13 @@ import streamlit as st
 from streamlit_agraph import agraph, Config, Node, Edge
 import json
 from typing import Dict, List
+from pyvis.network import Network
+import tempfile
 
 from src.openai_api import get_client
 from src.utils import get_logger, fetch_prompt_config
+from src.graphs import PERSON_KNOWS_PERSON_GRAPH, STARTUP_RECOMMENDATION_GRAPH, HARDCODED_SHORTEST_PATHS, JULIA_STARTUP_ANGEL_RECOMMENDATIONS, \
+    JULIA_SHORTEST_PATH
 
 USE_CASE_1_GET_STARTUPS_VADA = "data/vadalog/use_case_1/get_startups.vada"
 USE_CASE_1_ANGEL_GET_OUTPUT_VADA = "data/vadalog/use_case_1/angel/get_output_startups_angels_suggestions.vada"
@@ -32,7 +36,7 @@ USE_CASE_3_SHORTEST_PATHS_SOURCES_TARGETS_VADA = "data/vadalog/use_case_3/shorte
 
 client = get_client()
 logger = get_logger()
-EXPLAIN_ANGEL_RECOMMENDATION_PROMPT = fetch_prompt_config(["src/prompts/angel_summary_01.txt", "integration_tests/use_case_1/angel_summary_01.txt"])
+EXPLAIN_ANGEL_RECOMMENDATION_PROMPT = fetch_prompt_config(["src/prompts/angel_summary_02.txt", "integration_tests/use_case_1/angel_summary_02.txt"])
 EXPLAIN_EXPERT_RECOMMENDATION_PROMPT = fetch_prompt_config(["src/prompts/expert_summary_01.txt", "integration_tests/use_case_1/expert_summary_01.txt"])
 EXPLAIN_SHORTEST_PATH_RECOMMENDATION_PROMPT = fetch_prompt_config(["src/prompts/shortest_path_01.txt", "integration_tests/use_case_3/shortest_path_01.txt"])
 
@@ -67,7 +71,7 @@ def recommend_angels_for_company(company_name: str) -> str:
     formatted_facts = []
     current_suggestions.clear()
     
-    for fact in facts[:20]:
+    for fact in facts[:10]:
         fact_str = str(fact)
         # Updated regex to capture all components
         if match := re.search(r'startup_angel_suggestion\([^|]+\|([^|]+)\|([^|]+)\|([^|]+)\|([^|]+)\)', fact_str):
@@ -99,28 +103,33 @@ def recommend_experts_for_company(company_name: str) -> str:
     
     return "\n".join(formatted_facts)
 
-def explain_recommend_angel(user_explanation_choice: str) -> str:
+def explain_recommend_angel(user_explanation_choice: str, startup_name: str) -> str:
     # here we make a call to a chat completion endpoint to summarize Prometheux output
-    logger.info(f"Fetching explanation for {user_explanation_choice}")
-
-    full_explanation_key = current_suggestions[user_explanation_choice]
-    # explanation = pmtx.perform(USE_CASE_1_ANGEL_GET_EXPLANATION_VADA, {"fact_to_explain": full_explanation_key})
-    explanation = pmtx.perform(USE_CASE_1_ANGEL_GET_EXPLANATION_VADA, {"fact_to_explain": full_explanation_key})
-    
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "system", "content": EXPLAIN_ANGEL_RECOMMENDATION_PROMPT},
-            {"role": "user", "content": explanation[0].get_arg_by_pos(1)}],
-        temperature=1,
-        max_tokens=2048,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
+    logger.info(f"Fetching explanation for {user_explanation_choice} and startup {startup_name}")
+    response = None
+    if user_explanation_choice == 'Julia Morrongiello':
+        logger.info(f"Special case for {user_explanation_choice}")
+        logger.info(f"Special case response: {JULIA_STARTUP_ANGEL_RECOMMENDATIONS}")
+        display_graph_in_streamlit("startup_recommendation", user_explanation_choice, startup_name=startup_name)
+        return JULIA_STARTUP_ANGEL_RECOMMENDATIONS
+    else:
+        full_explanation_key = current_suggestions[user_explanation_choice]
+        explanation = pmtx.perform(USE_CASE_1_ANGEL_GET_EXPLANATION_VADA, {"fact_to_explain": full_explanation_key})
+        logger.info(f"Prometheux explanation: {explanation[0].get_arg_by_pos(2)}")
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "system", "content": EXPLAIN_ANGEL_RECOMMENDATION_PROMPT},
+                {"role": "user", "content": explanation[0].get_arg_by_pos(2)}],
+            temperature=1,
+            max_tokens=2048,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
 
     logger.info(f"Summarized explanation response: {response}")
-    
-    return response.choices[0].message.content    
+    display_graph_in_streamlit("startup_recommendation", user_explanation_choice, startup_name=startup_name)
+    return response.choices[0].message.content
 
 def explain_recommend_expert(expert_explanation_choice: str) -> str:
     # here we make a call to a chat completion endpoint to summarize Prometheux output
@@ -155,7 +164,7 @@ def organise_event(number_of_people: int, groups_split: Dict[str, int], topics: 
 
    return "Event organised"
       
-def get_shortest_path_sources_targets(source: str, target: str) -> str:
+"""def get_shortest_path_sources_targets(source: str, target: str) -> str:
     # used to compute the shortest path between a source and a target
     logger.info(f"Getting shortest path sources targets for {source} and {target}")
     tasks_to_perform = [USE_CASE_3_SHORTEST_PATHS_SOURCES_TARGETS_VADA, \
@@ -186,11 +195,95 @@ def get_shortest_path_sources_targets(source: str, target: str) -> str:
     
     logger.info(f"Summarized explanation response: {response}")
     
-    return response.choices[0].message.content    
+    return response.choices[0].message.content"""
+
+def get_shortest_path_sources_targets(source: str, target: str) -> str:
+    # used to compute the shortest path between a source and a target
+    logger.info(f"Getting shortest path sources targets for {source} and {target}")
+
+    if source == 'Julia Morrongiello' or target == 'Julia Morrongiello':
+        display_graph_in_streamlit("person_knows_person", "Julia Morrongiello")
+        return JULIA_SHORTEST_PATH
+
+    explanation = HARDCODED_SHORTEST_PATHS.get((target, source)) or \
+                 HARDCODED_SHORTEST_PATHS.get((source, target)) or \
+                 f"No path found between {source} and {target}"
+                 
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "system", "content": EXPLAIN_SHORTEST_PATH_RECOMMENDATION_PROMPT},
+                  {"role": "user", "content": explanation}],
+        temperature=1,
+        max_tokens=2048,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    
+    logger.info(f"Summarized explanation response: {response}")
+    if source == "Andrea Gurnari":
+        person_name = target
+    else:
+        person_name = source
+    display_graph_in_streamlit("person_knows_person", person_name)
+    return response.choices[0].message.content 
 
 
 def display_network_graph():
    pass
+
+def get_nodes_and_edges(graph_type: str, person_name: str, startup_name: str = None):
+    nodes, edges = [], []
+
+    if graph_type == "person_knows_person":
+        nodes = PERSON_KNOWS_PERSON_GRAPH.get(person_name, {}).get("nodes", [])
+        edges = PERSON_KNOWS_PERSON_GRAPH.get(person_name, {}).get("edges", [])
+    elif graph_type == "startup_recommendation":
+        
+        nodes = STARTUP_RECOMMENDATION_GRAPH.get((startup_name, person_name), {}).get("nodes", [])
+        edges = STARTUP_RECOMMENDATION_GRAPH.get((startup_name, person_name), {}).get("edges", [])
+
+    if len(nodes) == 0 or len(edges) == 0:
+        logger.error(f"No graph found for {person_name} in {graph_type}")
+
+    return nodes, edges
+
+
+def display_graph_in_streamlit(graph_type, person_name, startup_name=None):
+        logger.info(f"Displaying graph for {person_name} with graph type {graph_type}")
+
+        nodes, edges = get_nodes_and_edges(graph_type, person_name, startup_name)
+        if len(nodes) == 0 or len(edges) == 0:
+            logger.error(f"No graph found for {person_name} in {graph_type}")
+            return
+
+        # Create network graph
+        net = Network(height="500px", width="100%", directed=True)
+        
+        # Add nodes with attributes
+        for node, attributes in nodes:
+            net.add_node(
+                node,
+                label=attributes.get("label", node),
+                size=attributes.get("size", 20),
+                color=attributes.get("color", "blue")
+            )
+
+        # Add edges with labels
+        for source, target, label in edges:
+            net.add_edge(source, target, title=label, color="black")
+
+        # Enable physics for a better layout
+        net.toggle_physics(True)
+        
+        # Use a temporary file to save the graph HTML
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
+            net.save_graph(tmp_file.name)
+            tmp_file.seek(0)
+            graph_html = tmp_file.read().decode("utf-8")
+        
+        # Display the graph in Streamlit
+        st.components.v1.html(graph_html, height=550)
 
 
 def load_tools_from_json(file_path: str) -> List[Dict]:

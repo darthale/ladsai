@@ -9,10 +9,13 @@ import streamlit as st
 from openai import OpenAI
 from streamlit import session_state as ss
 from PIL import Image
+from pyvis.network import Network
+import tempfile
 
 from src.px_tools import recommend_angels_for_company, \
                         explain_recommend_angel, fetch_available_startups, display_network_graph, \
-                        recommend_experts_for_company, explain_recommend_expert, tools, get_shortest_path_sources_targets
+                        recommend_experts_for_company, explain_recommend_expert, tools, get_shortest_path_sources_targets, \
+                        get_nodes_and_edges, display_graph_in_streamlit
 from src.utils import get_logger
 from src.openai_api import get_client
 
@@ -73,6 +76,7 @@ def your_knowledge_graph():
         
         logger.info("Function invocation completed")    
         st.toast("Function completed", icon=":material/function:")
+        
         return tool_outputs, data.thread_id, data.id
 
     def data_streamer():

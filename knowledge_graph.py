@@ -15,7 +15,8 @@ import tempfile
 from src.px_tools import recommend_angels_for_company, \
                         explain_recommend_angel, fetch_available_startups, display_network_graph, \
                         recommend_experts_for_company, explain_recommend_expert, tools, get_shortest_path_sources_targets, \
-                        get_nodes_and_edges, display_graph_in_streamlit
+                        organise_networking_event,  find_names_for_networking_event_outside_network, \
+                        find_cohosting_funds_for_networking_event
 from src.utils import get_logger
 from src.openai_api import get_client
 
@@ -28,7 +29,10 @@ available_functions = {
     "display_network_graph": display_network_graph,
     "recommend_experts_for_company": recommend_experts_for_company,
     "explain_recommend_expert": explain_recommend_expert,
-    "get_shortest_path_sources_targets": get_shortest_path_sources_targets
+    "get_shortest_path_sources_targets": get_shortest_path_sources_targets,
+    "organise_networking_event": organise_networking_event,
+    "find_names_for_networking_event_outside_network": find_names_for_networking_event_outside_network,
+    "find_cohost_networking_event": find_cohosting_funds_for_networking_event
 }
 client = get_client()
 ASSISTANT_PROMPT = open("src/prompts/assistant.txt", "r").read()
@@ -76,7 +80,7 @@ def your_knowledge_graph():
         
         logger.info("Function invocation completed")    
         st.toast("Function completed", icon=":material/function:")
-        
+
         return tool_outputs, data.thread_id, data.id
 
     def data_streamer():
@@ -120,6 +124,7 @@ def your_knowledge_graph():
 
 
     def display_stream(content_stream, create_context=True):
+        logger.info(f"Content stream: {content_stream}")
         ss.stream = content_stream
         if create_context:
             with st.chat_message("assistant"):
@@ -141,7 +146,8 @@ def your_knowledge_graph():
                 name="Venture Capitalist Platform Manager Assistant",
                 instructions=ASSISTANT_PROMPT,
                 model="gpt-4o",
-                tools = tools
+                tools = tools,
+                temperature=0.1
             )
 
             if assistant is None:

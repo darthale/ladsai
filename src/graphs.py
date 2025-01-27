@@ -649,3 +649,95 @@ JULIA_STARTUP_ANGEL_RECOMMENDATIONS = """
 
 You share with Julia the participation in the fintech guild, the expertise in fintech and in startup investing. She is not a direct contact, but I can help you identify the shortest path to her.
 """
+
+HARDCODED_NETWORKING_EVENT_PARTICIPANTS = """
+For the event in London covering AI and Fintech, I would suggest the following participants. It is a mix of founders, VCs and angels. 
+
+Founders:
+- Francesco Simoneschi, Co-Founder of TrueLayer
+  - TrueLayer is a fintech company working in the open banking industry, worth at least 1bn (source)
+  - Francesco has participated to your last event Pitch the Guild, a fintech event.
+  - You are close to Francesco, having chatted to him 12 times over the last month. He is also on the cap table of Molecular Glue Labs, where you also invested.
+
+- Alessio Gastaldo, Founder of stealth
+  - He is working on a company in the AI space (source: Specter)
+  - Alessio is an expert in the AI space, having worked as ML Engineer at HotJar and RevenueCut
+  - You are also very close to Alessio, having chatted to him 20 times in the last week and messaged 8 times.
+- Max Ahrens, Co-Founder of Maihem
+  - He is working on Maihem, a company building a software to test AI models (deck)
+  - He is German, based in London
+  - He is also active in the AI community, participating to events like AI Tinkerers in London 
+  - You are close to Max, having chatted to him 5 times in the last week and e-mailed 5 times.
+
+- Andrea Silva, Co-Founder of Synthex
+  - He is working on Synthex, a company building AI agents for financial institutions (deck)
+  - You work at 2100 Ventures, recently invested in Synthex (source: cap table)
+  - He is Portuguese but not based in London, which is why it wasn’t a top priority
+
+
+VCs:
+- Pietro Bezza, Managing Partner at Connect Ventures
+  - Connect Ventures is an early-stage fund in UK and Europe.
+  - They have recently invested in startups in the AI and agentic space.
+  - You know Pietro very well, having worked at Connect Ventures and having chatted to him 90 times in the last month.
+
+- Francesco Corea, Director of Data Science at Greycroft
+  - Greycroft is an early-stage fund investing in US and Europe
+  - They have recently invested in the AI and fintech space
+  - He recently relocated from Los Angeles to London (source: notes)
+
+- Michael Stothard, Principal at Firstminute Capital
+  - Firstminute Capital is an early-stage fund investing in UK and Europe
+  - He focuses on Applied AI (source: notes), and you co-invested with them on Maihem and Lupa Pets
+  - He has recently closed a deal in the AI space – Granola – an AI notepad for people in back-to-back meetings.
+
+- Michele Foradori, Investment Director at BlackFin Tech
+  - Blackfin Tech invests in fintech companies at later stages, so it might complement very well the existing lineup
+  - He recently co-invested with you on one AI deal – Reveal – building AI agents for loan underwriting (source: cap table)
+  - He is based in Paris but was in London recently for the Fintech Burns Night Dinner event you participated to.
+
+Angels:
+- Oleg Tikhturov, Founding Partner at TrueSight Ventures and angel investor
+  - He is an angel investor, and you have co-invested with him on two deals already – Synthex, building AI agents for financial services and Saber – building AI agents for sales operations. He also shared with you Claimer – building a SaaS for tax credits.
+  - You recently attended the Synthex Kick-off dinner together in London, and are due to meet on Tuesday the 28th for a catch-up. He is based in London.
+
+- Mark Ransford
+  - He is an angel investor, and you have co-invested with him on 3 deals already – Arke, building an ERP for SMEs; Synthex, building AI agents for financial services; DESIA, building AI agents for private equity due-diligence.
+  - You recently attended the Synthex Kick-off dinner together in London and the Fintech Burns Night Dinner event he hosted in London.
+
+- Serge Chiaramonte
+  - He is an angel investor, however last year he paused deployment (source: notes). Nevertheless, you have invested with him on one deal – DESIA, building AI agents for private equity due diligence.
+  - You recently met him at Breakfast – Andrea <> Serge in London.
+
+- Keith Grose
+  - He is an active angel investor, and you have co-invested with him on one deal – Kernel (ex Momentum), building AI agents for sales ops.
+  - He has recently started as Head of UK for Coinbase and he is a Venture Partner at Rerail, a fund you have invested in focusing on fintech. He is based in London.
+  - He is also part of the Fintech Guild. You are due to meet him in London at Pitch the Guild 2025, on the 8th of February.
+"""
+
+HARDCODED_NETWORKING_EVENT_OUTSIDE_PARTICIPATNS = """
+ - Bence Komarniczky: Bence has covered multiple lead positions as Data Scientist. He is a close friend of Alessio Gastaldo, who is a super node is your network. Bence is an expert in Graphs and Knowledge Graphs, a hot topic in the current AI Space. 
+"""
+
+HARDCODED_NETWORKING_EVENT_COHOSTING_FUNDS = """
+For the event in London covering AI and Fintech, I would suggest the following funds to co-host with you:
+- Earlybird Venture Capital
+  - You have a strong link to Akash Bajwa, Principal at Earlybird and investing in Fintech. He is also part of the Fintech Guild.
+  - Earlybird has recently co-hosted with Plaid the Pitch the Guild 2025, where you moderated a panel on AI and Fintech
+  - They are based in London.
+
+- Connect Ventures
+  - You have a strong link to Pietro Bezza, Founder of Connect Ventures and investing in fintech. You worked at Connect Ventures.
+  - You co-hosted an event with Connect Ventures in 2024: Operators&Friends
+  - You have invested in Connect Ventures, making it likely that they will be willing to co-host with you.
+
+- Accel
+  - You have co-invested with Accel on one AI deal, Saber – building AI agents for sales ops
+  - You know Luca Bocchio, who is a VC investing in fintech – for example, he invested in Kevin. He is also based in London.
+  - You recently attended a fintech event hosted by Accel: the Accel Fintech Summit, in London, where Luca was also present
+
+- Rerail
+  - You have a strong link to Anthony Danon, Founder of Rerail and ex Cocoa, Anthemis, Hedosophia and Speedinvest.
+  - You have invested in Rerail with 2100, making it likely they might want to co-host an event with you.
+  - Several participants are also closely linked to Rerail, such as Keith Grose, Venture Partner at Rerail.
+"""

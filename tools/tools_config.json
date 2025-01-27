@@ -67,6 +67,50 @@
     {
        "type":"function",
        "function":{
+          "name":"organise_networking_event",
+          "description":"Organise a networking event. Call this whenever you need to organise an event for networking purposes. For example, when a user asks 'I am organising an event in London where I would like to invite 15 people: 5 VCs, 5 Founders and 5 Angels. The topic of the event is AI. Who should I invite?'",
+          "parameters":{
+             "type":"object",
+             "properties":{
+                "location":{
+                   "type":"string",
+                   "description":"The location of the event."
+                },
+                "participants":{
+                   "type":"string",
+                   "description":"The participants to the event."
+                },
+                "topic":{
+                   "type":"string",
+                   "description":"The topic of the event."
+                }
+             },
+             "required":[
+                "company_name",
+                "participants",
+                "topic"
+             ],
+             "additionalProperties":false
+          }
+       }
+    },
+    {
+      "type":"function",
+      "function":{
+         "name":"find_cohost_networking_event",
+         "description":"Search for funds that can cohost the networking event. Call this whenever you need to search for possible funds to cohost the networking event. For example, when a user asks 'Can you suggest some funds that can cohost the networking event?'"
+      }
+   },
+   {
+      "type":"function",
+      "function":{
+         "name":"find_names_for_networking_event_outside_netork",
+         "description":"Search for people names that are not part of the network and could be invited to the networking event. Call this whenever you need to search for possible people that are not in the part of the close network. For example, when a user asks 'Can you add a few names of people that are not in my portfolio?'"
+      }
+   },
+    {
+       "type":"function",
+       "function":{
           "name":"explain_recommend_expert",
           "description":"Given a recommended expert, explain in lay-terms why this expert was recommended. Call this whenever you need to get a human explanation. For example, when a user asks 'Tell me why this expert was recommended?'",
           "parameters":{

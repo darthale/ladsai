@@ -11,7 +11,7 @@ import tempfile
 from src.openai_api import get_client
 from src.utils import get_logger, fetch_prompt_config
 from src.graphs import PERSON_KNOWS_PERSON_GRAPH, STARTUP_RECOMMENDATION_GRAPH, HARDCODED_SHORTEST_PATHS, JULIA_STARTUP_ANGEL_RECOMMENDATIONS, \
-    JULIA_SHORTEST_PATH
+    JULIA_SHORTEST_PATH, HARDCODED_NETWORKING_EVENT_PARTICIPANTS, HARDCODED_NETWORKING_EVENT_OUTSIDE_PARTICIPATNS, HARDCODED_NETWORKING_EVENT_COHOSTING_FUNDS
 
 USE_CASE_1_GET_STARTUPS_VADA = "data/vadalog/use_case_1/get_startups.vada"
 USE_CASE_1_ANGEL_GET_OUTPUT_VADA = "data/vadalog/use_case_1/angel/get_output_startups_angels_suggestions.vada"
@@ -154,48 +154,21 @@ def explain_recommend_expert(expert_explanation_choice: str) -> str:
     
     return response.choices[0].message.content    
 
-def organise_event(number_of_people: int, groups_split: Dict[str, int], topics: List[str], location: str) -> str:
-   topics_str = ",".join(topics)
-   logger.info(f"Organising event with {number_of_people} people, {groups_split}, {topics_str}, {location}")
-   tasks_to_perform = [USE_CASE_2_PERSON_OR_FUNDS_PROPERTIES_OVERLAPS_1_VADA, USE_CASE_2_PERSON_OR_FUNDS_PROPERTIES_OVERLAPS_2_VADA, USE_CASE_2_EXPLAIN_PEOPLE_OR_FUNDS_PROPERTIES_OVERLAPS, USE_CASE_2_INDEX_EXPLANATIONS_PEOPLE_OR_FUNDS_PROPERTIES_OVERLAPS_VADA]
+def organise_networking_event(location: str, participants: int, topic: str) -> str:
+   
+   logger.info(f"Organising event with {participants} people abot {topic} in {location}")
 
-   pmtx.perform(tasks_to_perform, {"requested_properties": f"{location},{topics_str}"})
-   logger.info(f"Event organised")
+   return HARDCODED_NETWORKING_EVENT_PARTICIPANTS
 
-   return "Event organised"
-      
-"""def get_shortest_path_sources_targets(source: str, target: str) -> str:
-    # used to compute the shortest path between a source and a target
-    logger.info(f"Getting shortest path sources targets for {source} and {target}")
-    tasks_to_perform = [USE_CASE_3_SHORTEST_PATHS_SOURCES_TARGETS_VADA, \
-                       USE_CASE_3_EXPLAIN_SHORTEST_PATHS_SOURCES_TARGETS_VADA, \
-                       USE_CASE_3_INDEX_EXPLANATIONS_SHORTEST_PATHS_SOURCES_TARGETS_VADA]
-    pmtx.perform(tasks_to_perform, {"source": source, "target": target})
-    logger.info(f"Shortest path sources targets computed")
+def find_names_for_networking_event_outside_network() -> str:
+    logger.info(f"Looking for participants outside close network")
 
-    logger.info(f"Retrieving shortest path sources targets")
-    facts = pmtx.perform(USE_CASE_3_GET_SHORTEST_PATHS_SOURCES_TARGETS_VADA)
-    extracted_fact = str(facts[0])
-    logger.info(f"The shortest path between {source} and {target} is of length {extracted_fact.split("|")[-1]}")
+    return HARDCODED_NETWORKING_EVENT_OUTSIDE_PARTICIPATNS
 
-    logger.info(f"Preparing explanation for shortest path sources targets")
-    explanation = pmtx.perform(USE_CASE_3_GET_EXPLANATION_SHORTEST_PATHS_SOURCES_TARGETS_VADA, {"fact_to_explain": extracted_fact})
-    logger.info(f"raw explanation: {explanation[0].get_arg_by_pos(2)}")
+def find_cohosting_funds_for_networking_event() -> str:
+    logger.info(f"Looking for cohosting funds for networking event")
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "system", "content": EXPLAIN_SHORTEST_PATH_RECOMMENDATION_PROMPT},
-            {"role": "user", "content": explanation[0].get_arg_by_pos(2)[:2500]}],
-        temperature=1,
-        max_tokens=2048,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    
-    logger.info(f"Summarized explanation response: {response}")
-    
-    return response.choices[0].message.content"""
+    return HARDCODED_NETWORKING_EVENT_COHOSTING_FUNDS
 
 def get_shortest_path_sources_targets(source: str, target: str) -> str:
     # used to compute the shortest path between a source and a target

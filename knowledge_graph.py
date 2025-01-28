@@ -10,12 +10,12 @@ from openai import OpenAI
 from streamlit import session_state as ss
 from PIL import Image
 from pyvis.network import Network
-import tempfile
+import time
 
 from src.px_tools import recommend_angels_for_company, \
                         explain_recommend_angel, fetch_available_startups, display_network_graph, \
                         recommend_experts_for_company, explain_recommend_expert, tools, get_shortest_path_sources_targets, \
-                        organise_networking_event,  find_names_for_networking_event_outside_network, \
+                        organise_networking_event, \
                         find_cohosting_funds_for_networking_event
 from src.utils import get_logger
 from src.openai_api import get_client
@@ -31,7 +31,6 @@ available_functions = {
     "explain_recommend_expert": explain_recommend_expert,
     "get_shortest_path_sources_targets": get_shortest_path_sources_targets,
     "organise_networking_event": organise_networking_event,
-    "find_names_for_networking_event_outside_network": find_names_for_networking_event_outside_network,
     "find_cohost_networking_event": find_cohosting_funds_for_networking_event
 }
 client = get_client()
@@ -76,7 +75,18 @@ def your_knowledge_graph():
             function_name, function_arguments, function_id  = get_function_details(tool)
             logger.info(f"Calling the function {function_name} with arguments {function_arguments}")
             function_response = execute_function_call(function_name, function_arguments)
-            tool_outputs.append({"tool_call_id": tool.id, "output": function_response})
+            
+            def stream_function_response():
+                yield f"Function {function_name} output:\n"
+                yield str(function_response)
+            
+            
+            if function_name == "organise_networking_event" or function_name == "find_cohost_networking_event":
+                time.sleep(5)
+                st.write_stream(stream_function_response)
+                tool_outputs.append({"tool_call_id": tool.id, "output": "Completed"})
+            else:
+                tool_outputs.append({"tool_call_id": tool.id, "output": function_response})
         
         logger.info("Function invocation completed")    
         st.toast("Function completed", icon=":material/function:")
@@ -146,8 +156,7 @@ def your_knowledge_graph():
                 name="Venture Capitalist Platform Manager Assistant",
                 instructions=ASSISTANT_PROMPT,
                 model="gpt-4o",
-                tools = tools,
-                temperature=0.1
+                tools = tools
             )
 
             if assistant is None:
